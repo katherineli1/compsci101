@@ -1,0 +1,132 @@
+'''
+Created on Sep 14, 2016
+
+@author: Katherine Li
+'''
+import urllib2
+import random
+
+def fileToList(url):
+    '''
+    This function reads a file from a given url 
+    returns a list of strings where each string 
+    represents one line from the file
+    '''
+    alist = []
+    source = urllib2.urlopen(url)
+    for line in source:
+        items = line.strip()
+        modifiedstring = items[1:(items.find("- "))] + ":" + items[(items.find("- ") + 1):]
+        alist.append(modifiedstring)
+    return alist
+
+#This function takes a number and the reformatted list of strings of earthquakes and 
+#prints the earthquakes one per line for either the entire list of earthquakes 
+#(if the given number is -1 or greater than the length of the list) or just for the 
+#number of lines specified by the number parameter.
+def printQuakes(modifiedEqList, number):
+    alist = []
+    if number == -1:
+        for eq in modifiedEqList:
+            alist.append(eq)
+    elif number > len(modifiedEqList):
+        for eq in modifiedEqList:
+            alist.append(eq)
+    elif number > 1:
+        for eq in modifiedEqList[:number]:
+            alist.append(eq)
+    for value in range(len(alist)):
+        print alist[value]
+    return ""
+
+#This function takes a decimal number and a list of strings of earthquakes and checks if 
+#the magnitude of each earthquake specified in the list is greater than or equal to the decimal number.
+#If it is, that earthquake string gets added to a new list and the new list of earthquakes with 
+#magnitudes greater than the number parameter is returned.
+def bigQuakes(modifiedEqList, number):
+    alist = []
+    for eq in modifiedEqList:
+        eqMagnitude = float(eq[:(eq.find(" "))])
+        if eqMagnitude >= number:
+            alist.append(eq)
+    return alist
+
+#This function takes the name of a place and a list of strings of earthquakes and checks if the
+#last word of each earthquake string is equal to the place parameter. If it is, that earthquake
+#is added to a list of earthquakes that occurred in the specified place, which is then returned. 
+def locationQuakes(modifiedEqList, place):
+    alist = []
+    for eq in modifiedEqList:
+        if eq[(eq.rfind(" ") + 1):] == place:
+            alist.append(eq)
+    return alist
+
+#This function takes a list of strings of earthquakes and first creates a new list of just the numerical 
+#magnitudes of the earthquakes in the original list. It then finds the largest value in the new list
+#and prints the information (magnitude, location, etc.) about the earthquake with that magnitude.
+def largestMagnitudeQuake(modifiedEqList):
+    alist = []
+    for eq in modifiedEqList:
+        eqMagnitude = float(eq[:(eq.find(" "))])
+        alist.append(eqMagnitude)
+    largestMagnitude = max(alist)
+    for eq in modifiedEqList:
+        if largestMagnitude == float(eq[:(eq.find(" "))]):
+            print eq
+    return ""
+
+#This function allows users to generate a list that is as long as the number parameter of random earthquakes.
+#It takes a list of strings of earthquakes and the number of random earthquakes the user wants to generate and first 
+#checks if the number is less than the length of the list of earthquakes. If it is, the function randomly selects 
+#the number of earthquakes specified by the number parameter and adds them to a new list that is then returned. 
+#If the number is greater than the length of the list of earthquakes, the list is simply shuffled and then returned.
+def randomQuakes(modifiedEqList, number):
+    alist = []
+    if number <= len(modifiedEqList):
+        numList = random.sample(range(len(modifiedEqList)), number)
+        for x in numList:
+            alist.append(modifiedEqList[x])
+    elif number > len(modifiedEqList):
+        numList = random.shuffle(modifiedEqList)
+        alist = modifiedEqList
+    for value in range(len(alist)):
+        print alist[value]
+    return ""
+
+if __name__ == '__main__':
+    '''
+    Starting part of the earthquake program
+    Read a file of earthquake data and answer
+    several queries about the data.
+    '''
+    urlstart = "http://www.cs.duke.edu/courses/compsci101/fall16/data/"
+    datafile = "earthquakeDataSept14-2016past30days.txt"
+    #datafile = "earthquakeDataSmallFile.txt"
+    eqList = fileToList(urlstart+datafile)
+    
+    print "Number of lines in the file is:", len(eqList), "\n"
+        
+    print "First six lines in the list:"
+    for num in range(6):
+        print eqList[num]
+    
+    print
+    
+    print "First ten earthquakes in Peru are: \n", printQuakes(locationQuakes(eqList, "Peru"), 10)
+    
+    print "Number of earthquakes in Italy is:", len(locationQuakes(eqList, "Italy")), "\n"
+    
+    print "Number of California (CA) earthquakes 2.0 or higher is:", len(bigQuakes(locationQuakes(eqList, "CA"), 2.0)) + len(bigQuakes(locationQuakes(eqList, "California"), 2.0)), "\n"
+    
+    print "First six earthquakes in Italy with magnitude greater than 4.0 are: \n", printQuakes(bigQuakes(locationQuakes(eqList, "Italy"), 4.0), 6)
+    
+    print "Largest magnitude earthquake is:", largestMagnitudeQuake(eqList)
+    
+    print "Largest magnitude earthquake in Russia is:", largestMagnitudeQuake(locationQuakes(eqList, "Russia"))
+    
+    print "First ten earthquakes from Alaska with magnitude 1.0 or higher are: \n", printQuakes(bigQuakes(locationQuakes(eqList, "Alaska"), 1.0), 10)
+    
+    print "Ten random earthquakes from Alaska that are 1.0 or higher are: \n", randomQuakes(bigQuakes(locationQuakes(eqList, "Alaska"), 1.0), 10)
+
+
+
