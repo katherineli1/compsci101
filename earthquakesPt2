@@ -1,0 +1,120 @@
+'''
+Created on Nov 4, 2016
+
+@author: Katherine Li
+'''
+import urllib2
+
+#Imports and converts strings from a url to a list
+def urlToList(url):
+    answer = []
+    source = urllib2.urlopen(url)
+    for line in source:
+        answer.append(line.strip())
+    return answer
+
+#Imports and converts strings from a file to a list
+def fileToList(filename):
+    answer = []
+    f = open(filename)
+    for line in f:
+        answer.append(line.strip())
+    return answer
+
+#Creates a dictionary mapping base locations of earthquakes to the number 
+#of earthquakes that occurred in that location. Returns base location with 
+#the most earthquakes and number of earthquakes that occurred there.
+def baseLocationFreq(earthquakes):
+    eqDict = {}
+    for eq in earthquakes:
+        loc = eq.rfind(",")
+        if loc == -1:
+            loc2 = eq.find("of")
+            if loc2 == -1:
+                loc3 = eq.find("- ")
+                if eq[loc3 + 2:] in eqDict:
+                    eqDict[eq[loc3 + 2:]] += 1
+                else:
+                    eqDict[eq[loc3 + 2:]] = 1
+            else:
+                if eq[loc2 + 2:] in eqDict:
+                    eqDict[eq[loc2 + 2:]] += 1
+                else:
+                    eqDict[eq[loc2 + 2:]] = 1
+        else:
+            if eq[loc + 2:] in eqDict:
+                eqDict[eq[loc + 2:]] += 1
+            else:
+                eqDict[eq[loc + 2:]] = 1
+    
+    locFreq = [value for value in eqDict.values()]
+    
+    maxFreq = max(locFreq)
+    maxFreqIndex = locFreq.index(maxFreq)
+    maxLoc = eqDict.keys()[maxFreqIndex]
+    
+#     print eqDict.items()
+    print "The maximum base location with earthquakes is:", maxLoc
+    print "There were", maxFreq, "earthquakes there."
+
+#Creates a dictionary mapping full locations of earthquakes to a list of the magnitudes 
+#of earthquakes that occurred at that location. Returns the highest average magnitude 
+#out of the locations that had five or more earthquakes and the location name.
+def avgMagnitude(earthquakes):
+    eqDict = {}
+    avgMagnitudeList = []
+    avgLocationList = []
+    for eq in earthquakes:
+        loc = eq.find("- ")
+        if eq[loc + 2:] in eqDict:
+            eqDict[eq[loc + 2:]].append(float(eq[1:eq.find(" -")]))
+        else:
+            eqDict[eq[loc + 2:]] = [float(eq[1:eq.find(" -")])]
+    
+    for (key, value) in eqDict.items():
+        if len(value) >= 5:
+            avgMagnitudeList.append(sum(value)/len(value))
+            avgLocationList.append(key)
+    
+    maxMag = max(avgMagnitudeList)
+    maxMagIndex = avgMagnitudeList.index(maxMag)
+    maxLoc = avgLocationList[maxMagIndex]
+
+#     print eqDict.items()
+    print "The highest average magnitude for locations with 5 or more quakes is:", maxMag
+    print "It occurred at:", maxLoc
+
+#Creates a dictionary mapping magnitudes of earthquakes to a list of the locations that
+#had earthquakes of that magnitude. Returns the magnitude that occurred most often, the 
+#number of times it occurred, and in how many unique locations.
+def magnitudeFreq(earthquakes):
+    eqDict = {}
+    for eq in earthquakes:
+        if eq[1:eq.find(" -")] in eqDict:
+            eqDict[eq[1:eq.find(" -")]].append(eq[eq.find(" -") + 3:])
+        else:
+            eqDict[eq[1:eq.find(" -")]] = [eq[eq.find(" -") + 3:]]
+    
+    magFreq = [len(value) for value in eqDict.values()]
+    maxMagFreq = max(magFreq)
+    maxMagFreqIndex = magFreq.index(maxMagFreq)
+    maxMag = eqDict.keys()[maxMagFreqIndex]
+    maxMagUnique = len(set(eqDict.values()[maxMagFreqIndex]))
+    
+    print "The magnitude that occurs the most often is:", maxMag
+    print "It occurs", maxMagFreq, "times in", maxMagUnique, "unique locations."
+
+#Reads in the file or url to be read and then calls the functions to determine information
+#about the dataset.
+if __name__ == '__main__':
+    url = "http://www.cs.duke.edu/courses/fall16/compsci101/data/earthquakeDataNov1-2016past30days.txt"
+    earthquakes = urlToList(url)
+#     filename = "smallEarthquakeFile"
+#     earthquakes2 = fileToList(filename)
+    baseLocationFreq(earthquakes)
+    print
+    avgMagnitude(earthquakes)
+    print
+    magnitudeFreq(earthquakes)
+
+
