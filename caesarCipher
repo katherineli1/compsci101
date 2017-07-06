@@ -1,0 +1,146 @@
+'''
+Created on Sep 29, 2016
+
+@author: Katherine Li
+'''
+
+# opens a file and adds each line of the file to a list
+def readFile(fname):
+    '''
+    returns a list of words read from file
+    specified by fname
+    '''
+    f = open(fname)
+    st = f.read()
+    f.close()
+    return st.split()
+
+# takes a list of the lines in a list and writes them into a new file
+def writeFile(words, fname):
+    '''
+    write every element in words, a list of strings
+    to the file whose name is fname
+    put a space between every word written, and make
+    lines have length 80
+    '''
+    LINE_SIZE = 80
+    f = open(fname,"w")
+    wcount = 0
+    for word in words:
+        f.write(word)
+        wcount += len(word)
+        if wcount + 1 > LINE_SIZE:
+            f.write('\n')
+            wcount = 0
+        else:
+            f.write(' ')
+    f.close()
+
+# takes a word and the number of times to shift the letters of the word (in the alphabet) 
+# and returns a string of the encrypted word with the correct capitalization
+def encryptword(word, shift):
+    alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    caesar = alphabet[shift:] + alphabet[:shift]
+    word_temp = word.upper()
+    answer = ""
+    for char in word_temp:
+        if char.isalpha():
+            findex = alphabet.find(char)
+            answer += caesar[findex]
+        else:
+            answer += char
+    
+    if word == word.upper():
+        return answer
+    elif word == word.capitalize():
+        return answer.capitalize()
+    elif not word[0].isalpha():
+        for char in word:
+            if char.isalpha():
+                if word[word.find(char):] == word[word.find(char):].capitalize():
+                    for char in answer:
+                        if char.isalpha():
+                            return answer[:answer.find(char)] + answer[answer.find(char):].capitalize()
+    elif word == word.lower():
+        return answer.lower()
+
+# takes a regular phrase (string of words) and a number of times to shift it and encrypts
+# each word using encryptword(word, shift), then joins them together into a string
+def encrypt(phrase, shift):
+    answer = []
+    for word in phrase.split():
+        answer.append(encryptword(word, shift))
+    return ' '.join(answer)
+
+# prints out every possible shift value (0-25) for the encrypted phrase so the user can read over
+# the possible results and select the one that is in English
+def eyeball(encrypted):
+    for number in range(26):
+        print str(number) + " " + encrypt(encrypted, number)[:80]
+
+# decrypts an encrypted phrase by testing all the possible shifts and then letting the code select the
+# correct shift to use based on whether the words in the shift are real words. It then returns the 
+# decrypted phrase with the correct capitalization
+def decrypt(encrypted):
+    words_str = (" ".join(readFile("melville.txt"))).upper()
+    decryption_shifts = []
+    realwords = []
+    numrealwords = []
+    
+    for number in range(1,26):
+        decryption_shifts.append(encrypt(encrypted, number).upper())
+    for item in decryption_shifts:
+        item = item.split()
+        for word in item:
+            if word in words_str:
+                realwords.append(item)
+        numrealwords.append(len(realwords))
+        realwords = []
+
+    answer_temp = decryption_shifts[numrealwords.index(max(numrealwords))]
+    answer_temp_list = answer_temp.split()
+    answer_final = ""
+    encrypted_list = encrypted.split()
+    for num in range(len(encrypted_list)):
+        if encrypted_list[num] == encrypted_list[num].upper():
+            answer_final += answer_temp_list[num].upper() + " "
+        elif encrypted_list[num] == encrypted_list[num].capitalize():
+            answer_final += answer_temp_list[num].capitalize() + " "
+        elif not encrypted_list[num][0].isalpha():
+            for char in encrypted_list[num]:
+                if char.isalpha():
+                    if encrypted_list[num][encrypted_list[num].find(char):] == encrypted_list[num][encrypted_list[num].find(char):].capitalize():
+                        for char in answer_temp_list[num]:
+                            if char.isalpha():
+                                answer_final += answer_temp_list[num][:answer_temp_list[num].find(char)] + answer_temp_list[num][answer_temp_list[num].find(char):].capitalize() + " "
+                                break
+        elif encrypted_list[num] == encrypted_list[num].lower():
+            answer_final += answer_temp_list[num].lower() + " "
+    return answer_final
+
+# Reads the files to be decrypted and calls the functions that will be used to decrypt the files
+if __name__ == '__main__':
+    file1 = "encr-somefile1.txt"
+    file1_list = readFile(file1)
+    print "Read", len(file1_list), "words from", file1 + "."
+    file1_str = ' '.join(file1_list)
+    file1_eyeball = eyeball(file1_str)
+    file1_decrypted = decrypt(file1_str)
+    print "\n" + "DECRYPTED " + file1 + " as d" + file1 + ":"
+    print file1_decrypted
+    writeFile(file1_decrypted.split(), "d" + file1)
+    
+    print
+    
+    file2 = "encr-somefile2.txt"
+    file2_list = readFile(file2)
+    print "Read", len(file2_list), "words from", file2 + "."
+    file2_str = ' '.join(file2_list)
+    file2_eyeball = eyeball(file2_str)
+    file2_decrypted = decrypt(file2_str)
+    print "\n" + "DECRYPTED " + file2 + " as d" + file2 + ":"
+    print "\n" +  file2_decrypted
+    writeFile(file2_decrypted.split(), "d" + file2)
+    
+    
+
