@@ -1,0 +1,176 @@
+'''
+Created on Sep 14, 2016
+
+@author: Katherine Li
+'''
+
+#Size of canvas is 400,300
+
+import turtle               # allows us to use the turtles library
+wn = turtle.Screen()        # creates a graphics window
+wn.bgcolor("black")
+wn.setup(800, 600)
+
+#Creates rectangles using a turtle to the length and width specifications set by the user.
+def randomrectangles(turtle, length, width):
+    for x in range(2):
+        turtle.forward(length)
+        turtle.left(90)
+        turtle.forward(width)
+        turtle.left(90)
+
+#Creates a circle of alternating black and blue turtles facing outward with a radius that is 
+#specified by the user.
+def circularturtlepattern(turtle, radius):
+    turtle.shape("turtle")
+    for x in range(9):
+        turtle.up()
+        turtle.color("black")
+        turtle.forward(radius)
+        turtle.stamp()
+        turtle.backward(radius)
+        turtle.right(20)
+        turtle.color("blue")
+        turtle.forward(radius)
+        turtle.stamp()
+        turtle.backward(radius)
+        turtle.right(20)
+
+#Creates the background of the camera, i.e., the white top part of the camera and the white line
+#at the bottom of the camera signifying the edge of the camera.
+def camerabackground(turtle):
+    turtle.color("white")
+    turtle.fillcolor("white")
+    turtle.speed(10)
+    turtle.up()
+    turtle.goto(-400, 50)
+    turtle.down()
+    turtle.begin_fill()
+    randomrectangles(turtle, 800, 150)
+    turtle.end_fill()
+    
+    turtle.pensize(5)
+    turtle.up()
+    turtle.goto(-400, -275)
+    turtle.down()
+    turtle.forward(800)
+
+#Creates the outer part of the camera lens by creating a white circle with a thick black edge.
+def cameralensoutside(turtle):
+    turtle.color("black")
+    turtle.fillcolor("white")
+    turtle.pensize(5)
+    turtle.up()
+    turtle.goto(150, -200)
+    turtle.down()
+    turtle.begin_fill()
+    turtle.circle(160)
+    turtle.end_fill()
+
+#Creates the inside part of the camera lens by creating a smaller black circle with yet another
+#smaller circle inside it that fits inside the outer lens 
+def cameralensinside(turtle):
+    turtle.fillcolor("black")
+    turtle.up()
+    turtle.goto(150, -135)
+    turtle.down()
+    turtle.begin_fill()
+    turtle.circle(95)
+    turtle.end_fill()
+    
+    turtle.color("white")
+    turtle.pensize(3)
+    turtle.up()
+    turtle.goto(150, -125)
+    turtle.down()
+    turtle.circle(85)
+
+#Creates the two buttons at the top of the camera using the randomrectanges() function from earlier.
+def camerabuttons(turtle):
+    turtle.color("black")
+    turtle.fillcolor("white")
+    turtle.pensize(5)
+    turtle.up()
+    turtle.goto(-280, 205)
+    turtle.down()
+    turtle.begin_fill()
+    randomrectangles(turtle, 225, 50)
+    turtle.end_fill()
+    
+    turtle.up()
+    turtle.goto(175, 205)
+    turtle.down()
+    turtle.begin_fill()
+    randomrectangles(turtle, 90, 50)
+    turtle.end_fill()
+
+#Creates the text/logo on the side of the camera labeling it as a product of "TurtleCamera, Inc."
+#Also creates a decorative string of turtles underlining the text/logo that alternates white and
+#blue in color.
+def cameralogo(turtle):
+    turtle.color("white")
+    turtle.up()
+    turtle.goto(-320, -20)
+    turtle.write("TurtleCamera, Inc.", align = "left", font = ("TimesNewRoman", 22, "bold"))
+    turtle.goto(-320, -30)
+    turtle.shape("turtle")
+    turtle.pensize(0.5)
+    turtle.forward(8)
+    for x in range(3):
+        turtle.color("white")
+        turtle.stamp()
+        turtle.up()
+        turtle.forward(34)        
+        turtle.color("blue")
+        turtle.stamp()
+        turtle.up()
+        turtle.forward(34) 
+
+#This function writes out the text "Turtle camera lens vision is 20/20 just like" in smaller font near 
+#the bottom of the camera and then generates an arrow to draw the viewers' attention to the lens in 
+#the center of the camera. It then rapidly writes the text "Duke 2020" in the middle of the lens in blue.
+def zoom(turtle):
+    turtle.color("white")
+    turtle.speed(2)
+    turtle.up()
+    turtle.goto(-300, -200)
+    turtle.write("Turtle camera lens vision is 20/20 just like", True, align = "left", font = ("TimesNewRoman", 17, "bold"))
+    turtle.left(90)
+    turtle.forward(10)
+    turtle.right(30)
+    turtle.shape("arrow")
+    turtle.down()
+    turtle.forward(160)
+    turtle.stamp()
+    turtle.up()
+    turtle.color("blue")
+    turtle.goto(150, -55)
+    turtle.write("DUKE 2020", True, align = "center", font = ("TimesNewRoman", 27, "bold"))
+    turtle.hideturtle()
+    
+#Creates a decoration for the area between the outer and inner camera lenses by creating two concentric
+#circles of alternating black and blue turtles using the circularturtlepattern() function.
+def cameradecoration(turtle):
+    turtle.speed(5)
+    turtle.up()
+    turtle.goto(150, -40)
+    circularturtlepattern(turtle, 140)
+    turtle.right(12)
+    circularturtlepattern(turtle, 110)
+
+#Function to set up the turtle, Alex, and call the various tasks that Alex needs to complete.
+def draw():
+    alex = turtle.Turtle()
+    camerabackground(alex)
+    cameralensoutside(alex)
+    cameralensinside(alex)
+    camerabuttons(alex)
+    cameralogo(alex)
+    cameradecoration(alex)
+    zoom(alex)
+
+if __name__ == '__main__':
+    # main function to have a turtle draw a picture
+    print draw()
+
+    wn.exitonclick()
