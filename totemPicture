@@ -1,0 +1,207 @@
+'''
+Created on Sep 12, 2016
+
+@author: Katherine Li
+'''
+
+#This is a program created by Katherine Li that allows users to customize and create their own totem 
+#poles or have the program randomly generate different three headed totem poles for them.
+
+import random
+
+def hat_tophat(): #Returns a top hat for the totem pole head
+    p1 = r"    _________    "
+    p2 = r"   |         |   "
+    p3 = r" __|         |__ "
+    p4 = r"|_______________|"
+    return p1 + "\n" + p2 + "\n" + p3 + "\n" + p4
+
+def hair_grass(): #Returns straight hair
+    return r"|||||||||||||||||"
+
+def hair_pointy(): #Returns spiky/pointy hair
+    return r"/\/\/\/\/\/\/\/\/"
+
+def hair_windblownright(): #Returns hair that is slanted to the right
+    return r"/////////////////"
+
+def hair_square(): #Returns a block of hair that is square-shaped
+    p1 = r" _______________ "
+    p2 = r"/_______________\ "
+    return p1 + "\n" + p2
+
+def eye_round(): #Returns round eyes
+    p1 = r"| ___       ___ |"
+    p2 = r"|/   \     /   \|"
+    p3 = r"|  O  |   |  O  |"
+    p4 = r"|\___/     \___/|"
+    return p1 + "\n" + p2 + "\n" + p3 + "\n" + p4
+
+def eye_rectangle(): #Returns rectangular eyes
+    p1 = r"|_____     _____|"
+    p2 = r"|__O__|   |__O__|"
+    return p1 + "\n" + p2
+
+def eye_illuminati(): #Returns triangular eyes
+    p1 = r"|  /\       /\  |"
+    p2 = r"| /__\     /__\ |"
+    p3 = r"|/\_O/\   /\_O/\|"
+    p4 = r"/______\ /______\ "
+    return p1 + "\n" + p2 + "\n" + p3 + "\n" + p4
+
+def nose_smalltriangle(): #Returns a small triangular nose
+    p1 = r"|               |"
+    p2 = r"|      /_\      |"
+    return p1 + "\n" + p2
+
+def nose_button(): #Returns a circular, "button" nose
+    p1 = r"|               |"
+    p2 = r"|       o       |"
+    return p1 + "\n" + p2
+
+def nose_normal(): #Returns the typical triangular human nose with two nostrils 
+    p1 = r"|     /   \     |"
+    p2 = r"|    /_o_o_\    |"
+    return p1 + "\n" + p2
+
+def mouth_awkwardgrimace(): #Returns a mouth that is grimacing awkwardly and showing all its teeth
+    p1 = r"|  ___________  |"
+    p2 = r"|  |_|_|_|_|_|  |"
+    return p1 + "\n" + p2
+
+def mouth_teethsmile(): #Returns a mouth open in a happy exclamation/smile
+    p1 = r"|  ___________  |"
+    p2 = r"|  \_|_|_|_|_/  |"
+    p3 = r"|   \_______/   |"
+    return p1 + "\n" + p2 + "\n" + p3
+
+def mouth_tongue(): #Returns a mouth with the tongue sticking out
+    p1 = r"|   __________  |"
+    p2 = r"|   \__|  |__/  |"
+    p3 = r"|      \_/      |"
+    return p1 + "\n" + p2 + "\n" + p3
+
+def chin_square(): #Returns a square-shaped, flat chin
+    return r"|_______________|"
+
+def chin_cleft(): #Returns a chin with a cleft in the middle
+    p1 = r"|               |"
+    p2 = r"|______/ \______|"
+    return p1 + "\n" + p2
+
+def chin_shortbeard(): #Returns a chin with a short beard on the end
+    p1 = r"|____       ____|"
+    p2 = r"|____\\\|///____|"
+    return p1 + "\n" + p2
+
+def chin_longbeard(): #Returns a chin with a long beard on the end
+    p1 = r"|___         ___|"
+    p2 = r"|   \\\\|////   |"
+    p3 = r"|    \\\|///    |"
+    p4 = r"|     \\|//     |"
+    p5 = r"|______\|/______|"
+    return p1 + "\n" + p2 + "\n" + p3 + "\n" + p4 + "\n" + p5
+
+def bowtie_bigstripes(): #Returns a large bowtie with stripes on it
+    p1 = r"  |/ / \ / / /|  "
+    p2 = r"  |_/__/ \/_/_|  "
+    return p1 + "\n" + p2
+
+def bowtie_bigpolkadots(): #Returns a large bowtie with polka dots on it
+    p1 = r"  | o  \ / o o|  "
+    p2 = r"  |o_o_/ \__o_|  "
+    return p1 + "\n" + p2
+
+def bowtie_mini(): #Returns a tiny bowtie
+    return r"    |__>o<__|    "
+
+#Returns the topmost head in my totem pole with a top hat, straight hair, round eyes, a small triangular nose, an awkwardly grimacing mouth, and a cleft chin
+def head1(): 
+    return hat_tophat() + "\n" + hair_grass() + "\n" + eye_round() + "\n" + nose_smalltriangle() + "\n" + mouth_awkwardgrimace() + "\n" + chin_cleft()
+
+#Returns the middle head in my totem pole with spiky/pointy hair, rectangular eyes, a normal human nose, a mouth with the tongue sticking out, and a square chin
+def head2():
+    return hair_pointy() + "\n" + eye_rectangle() + "\n" + nose_normal() + "\n" + mouth_tongue() + "\n" + chin_square()
+    
+#Returns the bottom head in my totem pole with hair slanted to the right, triangular eyes, a circular nose, a mouth grinning with teeth showing, and a chin with a long beard
+def head3():
+    return hair_windblownright() + "\n" + eye_illuminati() + "\n" + nose_button() + "\n" + mouth_teethsmile() + "\n" + chin_longbeard()
+
+#Returns my customized totem pole as a combination of the top, middle, and bottom heads specified above
+def totem():
+    print head1() + "\n" + head2() + "\n" + head3()
+
+def random_hair(): #Randomly generates one of four types of hair styles
+    choice = random.randint(1,4)
+    if choice == 1:
+        return hair_grass()
+    elif choice == 2:
+        return hair_pointy()
+    elif choice == 3:
+        return hair_square()
+    elif choice == 4:
+        return hair_windblownright()
+
+def random_eye(): #Randomly generates one of three eye shapes
+    choice = random.randint(1,3)
+    if choice == 1:
+        return eye_round()
+    elif choice == 2:
+        return eye_rectangle()
+    elif choice == 3:
+        return eye_illuminati()
+
+def random_nose(): #Randomly generates one of three types of nose shapes
+    choice = random.randint(1,3)
+    if choice == 1:
+        return nose_smalltriangle()
+    elif choice == 2:
+        return nose_button()
+    elif choice == 3:
+        return nose_normal()
+
+def random_mouth(): #Randomly generates one of three types of mouth expressions
+    choice = random.randint(1,3)
+    if choice == 1:
+        return mouth_awkwardgrimace()
+    elif choice == 2:
+        return mouth_teethsmile()
+    elif choice == 3:
+        return mouth_tongue()
+
+def random_chin(): #Randomly generates one of four types of chins
+    choice = random.randint(1,4)
+    if choice == 1:
+        return chin_square()
+    elif choice == 2:
+        return chin_cleft()
+    elif choice == 3:
+        return chin_shortbeard()
+    elif choice == 4:
+        return chin_longbeard()
+
+def random_bowtie(): #Randomly generates either one of three types of bowties or no bowtie
+    choice = random.randint(1,4)
+    if choice == 1:
+        return ""
+    elif choice == 2:
+        return bowtie_bigstripes()
+    elif choice == 3:
+        return bowtie_bigpolkadots()
+    elif choice == 4:
+        return bowtie_mini()
+
+#Combines the randomly generated head parts to create a randomly generated totem pole head
+def randhead():
+    return random_hair() + "\n" + random_eye() + "\n" + random_nose() + "\n" + random_mouth() + "\n" + random_chin() + "\n" + random_bowtie()
+
+#Returns three randomly generated totem pole heads stacked on top of each other
+def randpole():
+    print randhead() + "\n" + randhead() + "\n" + randhead()
+
+if __name__ == '__main__':
+    print "My totem pole:"
+    totem()
+    print "\n" + "\n"
+    print "My random totem pole:"
+    randpole()
