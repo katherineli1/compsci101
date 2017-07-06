@@ -1,0 +1,173 @@
+'''
+Created on September 21, 2016
+@author: Katherine Li
+'''
+
+# converts a regular word into pig-latin following the rules provided
+def pigifyword(word):
+    '''
+    returns a piglatin-ized word 
+    of string parameter word
+    '''
+    answer = ""
+    if word[0] in "aeiou":
+        answer += word + "-way"
+    elif word[0] in "AEIOU" and word[-1].isupper() == False:
+        answer += word.capitalize() + "-way"
+    elif word[0] in "AEIOU" and word[-1].isupper():
+        answer += word + "-WAY"
+    
+    elif word[:2] == "qu":
+        answer += word[2:] + "-" + word[:2] + "ay"
+    elif word[:2] == "QU" and word[1].isupper() == False:
+        answer += word[2:].capitalize() + "-" + word[:2].lower() + "ay"
+    elif word[:2] == "QU" and word[1].isupper():
+        answer += word[2:] + "-" + word[:2] + "AY"
+    
+    elif word[0] == "y":
+        for char in word[1:]:
+            if char in "aeiouy":
+                answer += word[word.find(char):] + "-" + word[:word.find(char)] + "ay"
+                break
+    elif word[0] == "Y" and word[1].isupper() == False:
+        for char in word[1:]:
+            if char in "aeiouy":
+                answer += word[word.find(char):].capitalize() + "-" + word[:word.find(char)].lower() + "ay"
+                break
+    elif word[0] == "Y" and word[1].isupper():
+        for char in word[1:]:
+            if char in "AEIOUY":
+                answer += word[word.find(char):] + "-" + word[:word.find(char)] + "AY"
+                break
+    
+    else:
+        if word[0].islower():
+            for char in word:
+                if char in "aeiouy":
+                    answer += word[word.find(char):] + "-" + word[:word.find(char)] + "ay"
+                    break
+        elif word[0].isupper() and word[-1].isupper() == False:
+            for char in word:
+                if char in "aeiouy":
+                    answer += word[word.find(char):].capitalize() + "-" + word[:word.find(char)].lower() + "ay"
+                    break
+        elif word[0].isupper() and word[-1].isupper():
+            for char in word:
+                if char in "AEIOUY":
+                    answer += word[word.find(char):] + "-" + word[:word.find(char)] + "AY"
+                    break
+    
+    if answer != "":
+        return answer
+    if answer == "":
+        if word[-1].isupper():
+            return word + "-WAY"
+        else:
+            return word + "-way"
+
+# converts a regular phrase (string of words) into pig-latin using the pigifyword(word) method
+def pigifyall(phrase):
+    '''
+    returns a piglatin-ized string
+    of string parameter phrase
+    '''
+    # call pigifyword for each word in phrase
+    answer = []
+    for word in phrase.split():
+        answer.append(pigifyword(word))
+    return " ".join(answer)
+
+# converts a pig-latinized word into the regular form of the word
+def unpigifyword(word):
+    answer = ""
+    if word[-4:] == "-way" or word[-4:] == "-WAY":
+        answer += word[:word.find("-")]
+    
+    elif word[-5:] == "-quay" and word[0].islower():
+        answer += "qu" + word[:word.find("-")]
+    elif word[-5:] == "-quay" and word[0].isupper():
+        answer += "Qu" + word[:word.find("-")].lower()
+    elif word[-5:] == "-QUAY":
+        answer += "QU" + word[:word.find("-")]
+    
+    elif word[-3:] != "-ay" and word[0].islower():
+        answer += word[word.find("-") + 1:word.rfind("ay")] + word[:word.find("-")]
+    elif word[-3:] != "-ay" and word[0].isupper() and word[-1].islower():
+        answer += word[word.find("-") + 1:word.rfind("ay")].capitalize() + word[:word.find("-")].lower()
+    elif word[-3:] != "-AY":
+        answer += word[word.find("-") + 1:word.rfind("AY")] + word[:word.find("-")]
+    
+    return answer
+
+# converts a pig-latinized phrase (string of words) into the regular form of the phrase using the unpigifyword(word) method
+def unpigifyall(phrase):
+    answer = []
+    for word in phrase.split():
+        answer.append(unpigifyword(word))
+    return " ".join(answer)
+
+# opens a file with the name fname and adds every line of the file to a list
+def readFile(fname):
+    '''
+    returns a list of words read from file
+    specified by fname
+    '''
+    f = open(fname)
+    st = f.read()
+    f.close()
+    return st.split()
+
+# takes a list of the lines in a list and writes them into a new file
+def writeFile(words, fname):
+    '''
+    write every element in words, a list of strings
+    to the file whose name is fname
+    put a space between every word written, and make
+    lines have length 80
+    '''
+    LINE_SIZE = 80
+    f = open(fname,"w")
+    wcount = 0
+    for word in words:
+        f.write(word)
+        wcount += len(word)
+        if wcount + 1 > LINE_SIZE:
+            f.write('\n')
+            wcount = 0
+        else:
+            f.write(' ')
+    f.close()
+
+# Reads the files to be pigified and unpigified and calls the functions that will be used to convert the files
+if __name__ == '__main__':
+    # start with reading in data file
+    filename = "romeo.txt"
+    # wordlist is a list of words from the file
+    wordlist = readFile(filename)
+    print "Read", len(wordlist), "words from file", filename 
+    # result is the file as one long string
+    result = ' '.join(wordlist)
+    # convert to piglatin and write to file
+    pigstr = pigifyall(result)
+    writeFile(pigstr.split(), "pig-" + filename)
+    print "PIGIFIED " + filename + " as pig-" + filename
+    print "Here are the first 100 characters:"
+    print pigstr[0:100]  # just print first 100 chars
+    
+    print
+    
+    # ****** replace comments with code ******
+    # read in pigified file
+    filename_pig = "pig-romeo.txt"
+    wordlist_unpig = readFile(filename_pig)
+    print "Read", len(wordlist_unpig), "words from file", filename_pig 
+    # unpigify pigified file that was read
+    result_unpig = ' '.join(wordlist_unpig)
+    unpigstr = unpigifyall(result_unpig)
+    # write to file "unpig-"+filename
+    writeFile(unpigstr.split(), "unpig-" + filename_pig)
+    # print "UNPIGIFIED pig-" + filename + " as unpig-"+filename
+    print "UNPIGIFIED pig-" + filename + " as unpig-" + filename_pig
+    print "Here are the first 100 characters:"
+    print unpigstr[0:100]
+
