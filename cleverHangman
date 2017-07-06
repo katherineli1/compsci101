@@ -1,0 +1,147 @@
+'''
+Created on Nov 21, 2016
+
+@author: KatherineLi
+'''
+
+import random
+import string
+
+# converts a file of strings to a list of strings with each element as one line from the file
+def fileToStringList(filename):
+    wordlist = []
+    f = open(filename)
+    for line in f:
+        line = line.strip()
+        wordlist.append(line)
+    f.close()
+    return wordlist
+
+# creates a list of all of the words in the word list that are of "length" characters long
+def getPossibleWords(wordlist, length):
+    return [word for word in wordlist if len(word) == length]
+
+# converts and displays wordlist (a list of characters with letters correctly guessed and 
+# "_" for letters not guessed yet) as a string
+def displayGuess(wordList):
+    return ' '.join(wordList)
+
+# returns a list of "_" that is the same length as the word being guessed
+def guessStart(word):
+    return ['_']*len(word)
+
+# modifies guessList (list of characters composed of guessed letters and "_" for unguessed
+# letters) to contain the correctly guessed letter in the correct position. It also returns
+# a boolean (variable "miss") about whether or not a letter was guessed correctly
+def updateLetter(guessList, wordToGuess, letter):
+    miss = True
+    for num in range(len(wordToGuess)):
+        if letter == wordToGuess[num]:
+            guessList[num] = letter
+            miss = False
+    return miss
+
+# takes the parameter 'words' that contains the current possible words based on the user's 
+# guesses and checks each word in the list for the most recently guessed letter. it then generates
+# a dictionary with keys as the possible word structures and values as the possible words in 'words'
+# that fit the word structures
+def possibleWords(words, guessList, letter):
+    possibleWordsDict = {}
+    for word in words:
+        wordkey = ""
+        for num in range(len(word)):
+            if word[num] == letter:
+                wordkey += letter
+            else:
+                wordkey += guessList[num]
+        if wordkey not in possibleWordsDict:
+            possibleWordsDict[wordkey] = []
+        possibleWordsDict[wordkey].append(word)
+    return possibleWordsDict
+
+
+# runs the code for the user to play hangman. Depending on the mode selected, users can either see how 
+# the program generates a new secret word each time the user makes a guess to make the game as hard as 
+# possible, or users can just play the game regularly (without knowing that the game is "cheating")
+def playGame(words):
+    guessLength = int(raw_input("how many letters in word to guess? "))
+    allowedMisses = int(raw_input("how many wrong letter guesses are allowed? "))
+    print
+    wordsOfLength = getPossibleWords(words, guessLength)    
+    wordToGuess = random.choice(wordsOfLength)
+    guessList = guessStart(wordToGuess)
+    numMisses = 0
+    letter = " "
+    word = " "
+    letterList = list(string.ascii_lowercase)
+    
+    # start the guessing
+    while True:
+        if guessList.count('_') == 0:
+            break
+        if numMisses >= allowedMisses:
+            break
+        print "guessed so far:", displayGuess(guessList)
+        
+        if letter in letterList:
+            letterList.remove(letter)
+            print "letters not guessed:", "".join(letterList)
+        else:
+            print "letters not guessed:", "".join(letterList)
+        print "number of misses left:", allowedMisses - numMisses
+        
+        letter = raw_input("guess a letter or enter + to guess word: ")
+        if letter == "+":
+            word = raw_input("enter word: ")
+            break
+        else:
+            # generate dictionary with possible secret words based on parameters
+            possibleWordsDict = possibleWords(wordsOfLength, guessList, letter)
+            possibleWordsList = sorted([(len(value), key) for (key, value) in possibleWordsDict.items()])
+            # randomly selects a word from the dictionary key with the largest number of word possibilities
+            wordToGuess = random.choice(possibleWordsDict[possibleWordsList[-1][1]])
+            wordsOfLength = possibleWordsDict[possibleWordsList[-1][1]]
+            if DEBUG:
+                print "dictionary of categories and # of words: "
+                for (key, value) in possibleWordsDict.items():
+                    print key, len(value)
+                print "(secret word: " + wordToGuess + ") # of words possible: " + str(possibleWordsList[-1][0])
+
+            if updateLetter(guessList, wordToGuess, letter):
+                numMisses += 1
+        print
+        
+    # game over
+    if word == " ":
+        if numMisses >= allowedMisses:
+            print "You lost, you ran out of guesses. Word was: " + wordToGuess + "."
+        elif guessList.count('_') == 0:
+            print "You win. You guessed the word " + wordToGuess + "."
+        print "You incorrectly guessed", numMisses, "time(s)."
+    else:
+        if word == wordToGuess:
+            print "You win. You guessed the word " + wordToGuess + "."
+        else:
+            print "You guessed the wrong word. Word was: " + wordToGuess + "."
+        print "You incorrectly guessed", numMisses, "time(s)."
+
+
+if __name__ == '__main__':
+    words = fileToStringList('lowerwords.txt')
+    
+    print "Welcome to Hangman"
+    print "Do you want to play the game (g) or explore the testing mode(t)?"
+    # global variable that determines the mode of the game 
+    while True:
+        mode = raw_input("Type g or t: ")
+        if mode == "t":
+            DEBUG = True
+            break
+        elif mode == "g":
+            DEBUG = False
+            break
+        else:
+            print "That is not a valid mode. Please select either g or t."
+    
+    playGame(words)
+
