@@ -1,0 +1,149 @@
+'''
+Created on Oct 16, 2016
+
+@author: Katherine Li
+'''
+
+import random
+import string
+
+# converts a file of strings to a list of strings with each element as one line from the file
+def fileToStringList(filename):
+    """
+    filename is a file of strings, 
+    returns a list of strings, each string represents
+    one line from filename
+    """
+    wordlist = []
+    f = open(filename)
+    for line in f:
+        line = line.strip()
+        wordlist.append(line)
+    f.close()
+    return wordlist
+
+# creates a list of all of the words in the word list that are of "length" characters long
+def getPossibleWords(wordlist,length):
+    """
+    returns a list of words from wordlist having a 
+    specified length 
+    """
+    # TODO - write a list comprehension to return 
+    # only those words of the specified length
+    return [word for word in wordlist if len(word) == length]
+
+# converts and displays wordlist (a list of characters with letters correctly guessed and 
+# "_" for letters not guessed yet) as a string
+def displayGuess(wordList):
+    '''
+    wordList is a list of characters with letters correctly
+    guessed and '_' for letters not quessed yet
+    returns the list as a String
+    '''
+    return ' '.join(wordList)
+
+# returns a list of "_" that is the same length as the word being guessed
+def guessStart(word):
+    '''
+    returns a list of single characters '_' the
+    same size as word
+    '''
+    return ['_']*len(word)
+
+# modifies guessList (list of characters composed of guessed letters and "_" for unguessed
+# letters) to contain the correctly guessed letter in the correct position. It also returns
+# a boolean (variable "miss") about whether or not a letter was guessed correctly
+def updateLetter(guessList, wordToGuess, letter):
+    '''
+    wordToGuess is the word the user is trying to guess.
+    guessList is the word to guess as a list of characters, but
+    only including the letters the user has guessed and showing
+    the character '_' if a letter hasn't been guessed yet.
+    letter is the current letter the user has guessed. 
+    
+    Modify guessList to include letter in its proper locations if 
+    letter is in wordToGuess.
+    
+    For example, if the wordToGuess is "baloney" and so far only a and
+    e have been guessed, then guessList is ['_','a','_','_','_','e','_']
+    If letter is 'o', then guessList is modified to now be:
+    ['_','a','_','o','_','e','_']
+    
+    '''
+    # TODO: replace pass with code to modify guessList if letter is in
+    #  the wordToGuess
+    miss = True
+#     guessListOriginal = [x for x in guessList]
+    for num in range(len(wordToGuess)):
+        if letter == wordToGuess[num]:
+            guessList[num] = letter
+            miss = False
+#     if guessList == guessListOriginal:
+#         print "that's a miss :("
+#     else:
+#         print "you guessed a letter!"
+    return miss
+
+# code that lets users decide on the length of the word to guess and the number of misses
+# allowed and then enter guesses until they either win (by guessing all the letters
+# correctly or entering the entire word correctly) or lose (by running out of guesses or
+# entering the wrong word)
+def playGame(words):
+    '''
+    Play the game. Let the user know if they won or not.
+    '''
+    #setup for game
+    guessLength = int(raw_input("how many letters in word to guess? "))
+    allowedMisses = int(raw_input("how many wrong letter guesses are allowed? "))
+    print
+    wordsOfLength = getPossibleWords(words, guessLength)    
+    wordToGuess = random.choice(wordsOfLength)
+    guessList = guessStart(wordToGuess)
+    numMisses = 0
+    letter = " "
+    word = " "
+    letterList = list(string.ascii_lowercase)
+    
+    # start the guessing
+    while True:
+        if guessList.count('_') == 0:
+            # all letters guessed
+            break
+        if numMisses >= allowedMisses:
+            break
+        print "guessed so far:", displayGuess(guessList)
+        if letter in letterList:
+            letterList.remove(letter)
+            print "letters not guessed:", "".join(letterList)
+        else:
+            print "letters not guessed:", "".join(letterList)
+        print "number of misses left:", allowedMisses - numMisses
+        letter = raw_input("guess a letter or enter + to guess word: ")
+        if letter == "+":
+            word = raw_input("enter word: ")
+            break
+        else:
+            if updateLetter(guessList, wordToGuess, letter):
+                numMisses += 1
+        print
+    
+    # game over
+    if word == " ":
+        if numMisses >= allowedMisses:
+            print "You lost, you ran out of guesses. Word was: " + wordToGuess + "."
+        elif guessList.count('_') == 0:
+            print "You win. You guessed the word " + wordToGuess + "."
+#         else:
+#             print "You lost, word was " + wordToGuess + "."
+        print "You incorrectly guessed", numMisses, "time(s)."
+    else:
+        if word == wordToGuess:
+            print "You win. You guessed the word " + wordToGuess + "."
+        else:
+            print "You guessed the wrong word. Word was: " + wordToGuess + "."
+        print "You incorrectly guessed", numMisses, "time(s)."
+
+
+if __name__ == '__main__':
+    words = fileToStringList('lowerwords.txt')
+    playGame(words)
